@@ -1,7 +1,6 @@
-package main
+package coalpdf
 
 import (
-	"flag"
 	"fmt"
 	"strings"
 	"sync"
@@ -12,42 +11,15 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-const MaxObjects = 50
-var honeys map[string][]string
-
-func main() {
-
-	honeys = make(map[string][]string)
-
-	dirname := flag.String("d", "", "Directory to fumigate")
-	filename := flag.String("f", "", "File to fumigate")
-	visuals := flag.Bool("v", true, "Visual progress")
-
-	flag.Parse()
-	if *dirname == "" && *filename == "" {
-		usage()
-		return
-	}
-
-	if *dirname != "" {
-		fumigateDir(*dirname, *visuals)
-	}
-	if *filename != "" {
-		fumigateFile(*filename, *visuals)
-	}
-
-	printResults()
-}
-
-func fumigateFile(filename string, visuals bool) {
-	urls, found, _ := doCheckFile(filename, visuals)
+func (cpdfm *CPDFManager) FumigateFile(filename string, visuals bool) {
+	urls, found, _ := cpdfm.doCheckFile(filename, visuals)
 	if found {
 		//fmt.Printf("Appending %#v\n", urls)
-		honeys[filename] = urls
+		cpdfm.Honeys[filename] = urls
 	}
 
 }
-func fumigateDir(dirname string, visuals bool) {
+func (cpdfm *CPDFManager) FumigateDir(dirname string, visuals bool) {
 
 	var wg sync.WaitGroup
 
@@ -58,12 +30,14 @@ func fumigateDir(dirname string, visuals bool) {
 				wg.Add(1)
 				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
 				go func() {
-					urls, found, _ := doCheckFile(osPathname, visuals)
+					urls, found, _ := cpdfm.doCheckFile(osPathname, visuals)
 					/*if err!=nil {
 						fmt.Printf("%s\n", err)
 					}*/
 					if found {
-						honeys[osPathname] = urls
+						cpdfm.Mutex.Lock()
+						cpdfm.Honeys[osPathname] = urls
+						cpdfm.Mutex.Unlock()
 					}
 					defer wg.Done()
 				}()
@@ -80,24 +54,24 @@ func fumigateDir(dirname string, visuals bool) {
 	wg.Wait()
 }
 
-func doCheckFile(path string, visuals bool) ([]string, bool, error) {
+func (cpdfm *CPDFManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
 
 	var urls = make([]string,0)
 	var bar *progressbar.ProgressBar
 
-	if visuals {
-		fmt.Printf("%s\n", path)
-	}
 	file, err := pdfcpu.ReadFile(path, nil)
 	if err != nil {
 		return urls, false, err
 	}
 
+	if visuals {
+		fmt.Printf("%s\n", path)
+	}
 	// We could not find a reliable way to get to the right object - brute force
 	if visuals {
-		bar = progressbar.Default(MaxObjects)
+		bar = progressbar.Default(cpdfm.MaxObjects)
 	}
-	for i := 1; i <= MaxObjects; i++ {
+	for i := 1; i <= int(cpdfm.MaxObjects); i++ {
 
 		if visuals {
 			_ = bar.Add(1)
@@ -126,15 +100,12 @@ func doCheckFile(path string, visuals bool) ([]string, bool, error) {
 	return urls, false, nil
 }
 
-func printResults(){
+func (cpdfm *CPDFManager) PrintResults(){
 	fmt.Println("\n\n=== Seek Canaries in URLs ===")
-	for k, v := range honeys {
+	for k, v := range cpdfm.Honeys {
 		fmt.Printf("%s:\n", k)
 		for i,u :=range v {
 			fmt.Printf("\t%d: %s\n", i+1, u)
 		}
 	}
-}
-func usage() {
-	fmt.Printf("Usage: coalmine -d=<dir>\n")
 }
