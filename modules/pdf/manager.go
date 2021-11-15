@@ -2,6 +2,12 @@ package coalpdf
 
 import "sync"
 
+type CPDFManager struct {
+	Mutex *sync.RWMutex
+	MaxObjects int64
+	Honeys map[string][]string
+}
+
 var cpdfm *CPDFManager
 
 func CPDFManagerFactory() *CPDFManager {

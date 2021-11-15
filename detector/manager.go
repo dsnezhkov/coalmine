@@ -14,9 +14,9 @@ type CanaryOrgDetector struct {
 var (
 	// http://j2d9n4auf7b5aeaph3jhlbtp3.canarytokens.net/FADYIMGCFISKUHKSKTQGUOFQTFYHOQITFK
 	canaryOrgRules = []string{
-		".*canarytokens.net",
-		"http?.*\\/\\/[a-z0-9A-Z]{25}.",
-		"http?.*\\/.*\\/[A-Z]{34}",
+		".*canarytokens.net", // unmodified reference
+		"http?.*\\/\\/[a-z0-9A-Z]{25}.", // format for subdomain
+		"http?.*\\/.*\\/[A-Z]{34}", // format for resource
 	}
 	cod *CanaryOrgDetector
 )

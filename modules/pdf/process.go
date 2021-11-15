@@ -67,10 +67,11 @@ func (cpdfm *CPDFManager) doCheckFile(path string, visuals bool) ([]string, bool
 	if visuals {
 		fmt.Printf("%s\n", path)
 	}
-	// We could not find a reliable way to get to the right object - brute force
 	if visuals {
 		bar = progressbar.Default(cpdfm.MaxObjects)
 	}
+
+	// We could not find a reliable way to get to the right object - brute force
 	for i := 1; i <= int(cpdfm.MaxObjects); i++ {
 
 		if visuals {
@@ -100,12 +101,3 @@ func (cpdfm *CPDFManager) doCheckFile(path string, visuals bool) ([]string, bool
 	return urls, false, nil
 }
 
-func (cpdfm *CPDFManager) PrintResults(){
-	fmt.Println("\n\n=== Seek Canaries in URLs ===")
-	for k, v := range cpdfm.Honeys {
-		fmt.Printf("%s:\n", k)
-		for i,u :=range v {
-			fmt.Printf("\t%d: %s\n", i+1, u)
-		}
-	}
-}
