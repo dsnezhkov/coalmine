@@ -1,4 +1,4 @@
-package excel
+package word
 
 import (
 	"archive/zip"
@@ -13,37 +13,37 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-func (cxlsm *CXLSManager) FumigateFile(filename string, visuals bool) {
-	urls, found, err := cxlsm.doCheckFile(filename, visuals)
+func (cdocm *CDOCManager) FumigateFile(filename string, visuals bool) {
+	urls, found, err := cdocm.doCheckFile(filename, visuals)
 	if err != nil {
 		fmt.Printf("error fumigating file %s : %#v\n", filename, urls)
 	}
 	if found {
-		cxlsm.Honeys[filename] = urls
+		cdocm.Honeys[filename] = urls
 	}
 
 }
-func (cxlsm *CXLSManager) FumigateDir(dirname string, visuals bool) {
+func (cdocm *CDOCManager) FumigateDir(dirname string, visuals bool) {
 
 	var wg sync.WaitGroup
 
 	err := godirwalk.Walk(dirname, &godirwalk.Options{
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if strings.Contains(osPathname, ".xlsx") ||
-				strings.Contains(osPathname, ".xls") ||
-				strings.Contains(osPathname, ".xlsm") {
+			if strings.Contains(osPathname, ".docx") ||
+				strings.Contains(osPathname, ".doc") ||
+				strings.Contains(osPathname, ".docm") {
 
 				wg.Add(1)
 				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
 				go func() {
-					urls, found, _ := cxlsm.doCheckFile(osPathname, visuals)
+					urls, found, _ := cdocm.doCheckFile(osPathname, visuals)
 					/*if err!=nil {
 						fmt.Printf("%s\n", err)
 					}*/
 					if found {
-						cxlsm.Mutex.Lock()
-						cxlsm.Honeys[osPathname] = urls
-						cxlsm.Mutex.Unlock()
+						cdocm.Mutex.Lock()
+						cdocm.Honeys[osPathname] = urls
+						cdocm.Mutex.Unlock()
 					}
 					defer wg.Done()
 				}()
@@ -60,7 +60,7 @@ func (cxlsm *CXLSManager) FumigateDir(dirname string, visuals bool) {
 	wg.Wait()
 }
 
-func (cxlsm *CXLSManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
+func (cdocm *CDOCManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
 
 	var urls = make([]string, 0)
 	var bar *progressbar.ProgressBar
@@ -105,7 +105,7 @@ func (cxlsm *CXLSManager) doCheckFile(path string, visuals bool) ([]string, bool
 			}
 			// seeking Target= constructs with external attribute
 			rUrl := regexp.MustCompile(`(?i)Target="(?P<link>http.+?)" TargetMode="External"`)
-			if ok, urlst := cxlsm.processZFile(buffer, rUrl); ok {
+			if ok, urlst := cdocm.processZFile(buffer, rUrl); ok {
 
 				for _, u := range urlst {
 					urls = append(urls, u)
@@ -120,7 +120,7 @@ func (cxlsm *CXLSManager) doCheckFile(path string, visuals bool) ([]string, bool
 	return urls, false, nil
 }
 
-func (cxlsm *CXLSManager) processZFile(content []byte, pattern *regexp.Regexp) (bool, []string) {
+func (cdocm *CDOCManager) processZFile(content []byte, pattern *regexp.Regexp) (bool, []string) {
 
 	var result []string
 	if pattern.Match(content) {
