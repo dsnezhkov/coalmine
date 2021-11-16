@@ -9,11 +9,19 @@ Less detection, more fun.
 
 ### Usage
 
-Fast demining of all supported types. 
+Fastest demining (parallel) of all supported types. 
+E.g. As many as core CPU-N paralleism, immediate access
 ```
-./bin/coalmine all -l ~/Downloads   -c  -v 
+./bin/coalmine all -l ~/Downloads -c  -v 
 ```
 
+Slower demining (sequential) of all supported types.
+E.g.: go in sequence and wait rand(0..10) sec before each file
+```
+./bin/coalmine all -l ./data -c -s -v -j 10
+
+```
+Demining by type
 ```
 ./bin/coalmine pdf -l ~/Downloads  -p 50  -c  -v 
 ./bin/coalmine pdf -l ~/Downloads/file.pdf  -p 50  -c  -v 

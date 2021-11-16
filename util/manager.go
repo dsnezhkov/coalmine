@@ -2,8 +2,10 @@ package util
 
 import (
 	"fmt"
+	"math/rand"
 	"regexp"
 	"sync"
+	"time"
 
 	"coalmine/modules"
 	"github.com/karrick/godirwalk"
@@ -25,9 +27,9 @@ func DemineFile(filename string, visuals bool,
 	return format
 }
 
-
 func DemineDir(dirname string, visuals bool,
-	file2mod map[string]modules.Processor, file2reg map[string]*regexp.Regexp) {
+	file2mod map[string]modules.Processor, file2reg map[string]*regexp.Regexp,
+	options map[string]interface{}) {
 
 	var wg sync.WaitGroup
 
@@ -36,11 +38,31 @@ func DemineDir(dirname string, visuals bool,
 
 			for k, v := range file2reg {
 				if v.MatchString(osPathname) {
-					wg.Add(1)
-					go func(format string) {
-						flail(format,file2mod[k],osPathname,visuals)
-						defer wg.Done()
-					}(k)
+
+					if options["sequential"].(bool) {
+
+						// TODO: refactor
+						jitter  := options["jitter"].(int)
+						if jitter != 0 {
+							randPause := rand.Intn(jitter)
+							time.Sleep(time.Duration(randPause) * time.Second)
+						}
+
+						flail(k, file2mod[k], osPathname, visuals)
+					} else {
+						wg.Add(1)
+
+						// TODO: refactor
+						jitter  := options["jitter"].(int)
+						if jitter != 0 {
+							randPause := rand.Intn(jitter)
+							time.Sleep(time.Duration(randPause) * time.Second)
+						}
+						go func(format string) {
+							flail(format, file2mod[k], osPathname, visuals)
+							defer wg.Done()
+						}(k)
+					}
 
 					break
 				}
@@ -56,7 +78,7 @@ func DemineDir(dirname string, visuals bool,
 	wg.Wait()
 }
 
-func flail(format string, processor modules.Processor, filepath string, visuals bool){
+func flail(format string, processor modules.Processor, filepath string, visuals bool) {
 	_, err := processor.DemineFile(filepath, visuals)
 	if err != nil {
 		fmt.Printf("error: %v", err)
