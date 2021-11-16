@@ -112,7 +112,10 @@ data/hhwci3lxddtv9a8bbw1vzp2u5.docm:
 
 
 ```
-
+### Build
+```
+ go build -o bin/coalmine -ldflags="-s -w"  cmd/coalmine/main.go
+```
 ### Currently supported formats
 - PDF
 - DOC(X|M)
