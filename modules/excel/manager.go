@@ -21,3 +21,7 @@ func CXLSManagerFactory() *CXLSManager {
 	return cxlsm
 }
 
+func (cxlsm *CXLSManager) GetHoneys() map[string][]string {
+	return cxlsm.Honeys
+}
+

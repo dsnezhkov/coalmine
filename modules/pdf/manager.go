@@ -1,4 +1,4 @@
-package coalpdf
+package pdf
 
 import "sync"
 
@@ -22,3 +22,6 @@ func CPDFManagerFactory() *CPDFManager {
 	return cpdfm
 }
 
+func (cpdfm *CPDFManager) GetHoneys() map[string][]string {
+	return cpdfm.Honeys
+}

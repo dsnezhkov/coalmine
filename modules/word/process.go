@@ -5,78 +5,40 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"path"
 	"regexp"
-	"strings"
-	"sync"
 
-	"github.com/karrick/godirwalk"
 	"github.com/schollz/progressbar/v3"
 )
 
-func (cdocm *CDOCManager) FumigateFile(filename string, visuals bool) {
+func (cdocm *CDOCManager) DemineFile(filename string, visuals bool) (bool, error) {
 	urls, found, err := cdocm.doCheckFile(filename, visuals)
-	if err != nil {
-		fmt.Printf("error fumigating file %s : %#v\n", filename, urls)
-	}
 	if found {
+		cdocm.Mutex.Lock()
 		cdocm.Honeys[filename] = urls
+		cdocm.Mutex.Unlock()
 	}
-
-}
-func (cdocm *CDOCManager) FumigateDir(dirname string, visuals bool) {
-
-	var wg sync.WaitGroup
-
-	err := godirwalk.Walk(dirname, &godirwalk.Options{
-		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if strings.Contains(osPathname, ".docx") ||
-				strings.Contains(osPathname, ".doc") ||
-				strings.Contains(osPathname, ".docm") {
-
-				wg.Add(1)
-				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
-				go func() {
-					urls, found, _ := cdocm.doCheckFile(osPathname, visuals)
-					/*if err!=nil {
-						fmt.Printf("%s\n", err)
-					}*/
-					if found {
-						cdocm.Mutex.Lock()
-						cdocm.Honeys[osPathname] = urls
-						cdocm.Mutex.Unlock()
-					}
-					defer wg.Done()
-				}()
-				return nil
-			}
-			return nil
-		},
-		Unsorted: true,
-	})
-	if err != nil {
-		fmt.Printf("Walk err: %s\n", err)
-	}
-
-	wg.Wait()
+	return found, err
 }
 
-func (cdocm *CDOCManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
+func (cdocm *CDOCManager) doCheckFile(filepath string, visuals bool) ([]string, bool, error) {
 
 	var urls = make([]string, 0)
 	var bar *progressbar.ProgressBar
 
-	zr, err := zip.OpenReader(path)
+	zr, err := zip.OpenReader(filepath)
 	if err != nil {
 		return urls, false, err
 	}
 	defer zr.Close()
 
 	if visuals {
-		fmt.Printf("%s\n", path)
+		fmt.Printf("%s\n", filepath)
 	}
 
 	if visuals {
-		bar = progressbar.Default(int64(len(zr.File)))
+		//bar = progressbar.Default(int64(len(zr.File)), path.Base(filepath))
+		bar = progressbar.Default(-1, path.Base(filepath))
 	}
 
 	for _, f := range zr.File {

@@ -5,78 +5,38 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"path"
 	"regexp"
-	"strings"
-	"sync"
 
-	"github.com/karrick/godirwalk"
 	"github.com/schollz/progressbar/v3"
 )
 
-func (cxlsm *CXLSManager) FumigateFile(filename string, visuals bool) {
+func (cxlsm *CXLSManager) DemineFile(filename string, visuals bool) (bool, error) {
 	urls, found, err := cxlsm.doCheckFile(filename, visuals)
-	if err != nil {
-		fmt.Printf("error fumigating file %s : %#v\n", filename, urls)
-	}
 	if found {
+		cxlsm.Mutex.Lock()
 		cxlsm.Honeys[filename] = urls
+		cxlsm.Mutex.Unlock()
 	}
-
-}
-func (cxlsm *CXLSManager) FumigateDir(dirname string, visuals bool) {
-
-	var wg sync.WaitGroup
-
-	err := godirwalk.Walk(dirname, &godirwalk.Options{
-		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if strings.Contains(osPathname, ".xlsx") ||
-				strings.Contains(osPathname, ".xls") ||
-				strings.Contains(osPathname, ".xlsm") {
-
-				wg.Add(1)
-				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
-				go func() {
-					urls, found, _ := cxlsm.doCheckFile(osPathname, visuals)
-					/*if err!=nil {
-						fmt.Printf("%s\n", err)
-					}*/
-					if found {
-						cxlsm.Mutex.Lock()
-						cxlsm.Honeys[osPathname] = urls
-						cxlsm.Mutex.Unlock()
-					}
-					defer wg.Done()
-				}()
-				return nil
-			}
-			return nil
-		},
-		Unsorted: true,
-	})
-	if err != nil {
-		fmt.Printf("Walk err: %s\n", err)
-	}
-
-	wg.Wait()
+	return found, err
 }
 
-func (cxlsm *CXLSManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
+func (cxlsm *CXLSManager) doCheckFile(filepath string, visuals bool) ([]string, bool, error) {
 
 	var urls = make([]string, 0)
 	var bar *progressbar.ProgressBar
 
-	zr, err := zip.OpenReader(path)
+	zr, err := zip.OpenReader(filepath)
 	if err != nil {
 		return urls, false, err
 	}
 	defer zr.Close()
 
 	if visuals {
-		fmt.Printf("%s\n", path)
+		fmt.Printf("%s\n", filepath)
 	}
-
 	if visuals {
-		bar = progressbar.Default(int64(len(zr.File)))
+		bar = progressbar.Default(-1, path.Base(filepath))
 	}
 
 	for _, f := range zr.File {

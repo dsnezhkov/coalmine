@@ -21,3 +21,6 @@ func CDOCManagerFactory() *CDOCManager {
 	return cdocm
 }
 
+func (cdocm *CDOCManager) GetHoneys() map[string][]string {
+	return cdocm.Honeys
+}

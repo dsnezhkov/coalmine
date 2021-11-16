@@ -1,74 +1,41 @@
-package coalpdf
+package pdf
 
 import (
 	"fmt"
-	"strings"
-	"sync"
+	"path"
 	"time"
 
-	"github.com/karrick/godirwalk"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
 	"github.com/schollz/progressbar/v3"
 )
 
-func (cpdfm *CPDFManager) FumigateFile(filename string, visuals bool) {
-	urls, found, _ := cpdfm.doCheckFile(filename, visuals)
+func (cpdfm *CPDFManager) DemineFile(filename string, visuals bool) (bool, error) {
+	urls, found, err := cpdfm.doCheckFile(filename, visuals)
 	if found {
-		//fmt.Printf("Appending %#v\n", urls)
+		cpdfm.Mutex.Lock()
 		cpdfm.Honeys[filename] = urls
+		cpdfm.Mutex.Unlock()
 	}
-
-}
-func (cpdfm *CPDFManager) FumigateDir(dirname string, visuals bool) {
-
-	var wg sync.WaitGroup
-
-	err := godirwalk.Walk(dirname, &godirwalk.Options{
-		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if strings.Contains(osPathname, ".pdf") {
-
-				wg.Add(1)
-				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
-				go func() {
-					urls, found, _ := cpdfm.doCheckFile(osPathname, visuals)
-					/*if err!=nil {
-						fmt.Printf("%s\n", err)
-					}*/
-					if found {
-						cpdfm.Mutex.Lock()
-						cpdfm.Honeys[osPathname] = urls
-						cpdfm.Mutex.Unlock()
-					}
-					defer wg.Done()
-				}()
-				return nil
-			}
-			return nil
-		},
-		Unsorted: true,
-	})
-	if err != nil {
-		fmt.Printf("Walk err: %s\n", err)
-	}
-
-	wg.Wait()
+	return found, err
 }
 
-func (cpdfm *CPDFManager) doCheckFile(path string, visuals bool) ([]string, bool, error) {
+
+func (cpdfm *CPDFManager) doCheckFile(filepath string, visuals bool) ([]string, bool, error) {
 
 	var urls = make([]string,0)
 	var bar *progressbar.ProgressBar
 
-	file, err := pdfcpu.ReadFile(path, nil)
+
+	file, err := pdfcpu.ReadFile(filepath, nil)
 	if err != nil {
 		return urls, false, err
 	}
 
 	if visuals {
-		fmt.Printf("%s\n", path)
+		fmt.Printf("%s\n", filepath)
 	}
 	if visuals {
-		bar = progressbar.Default(cpdfm.MaxObjects)
+		bar = progressbar.Default(-1, path.Base(filepath))
 	}
 
 	// We could not find a reliable way to get to the right object - brute force
