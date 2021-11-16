@@ -1,23 +1,32 @@
 
 <img src="https://github.com/dsnezhkov/coalmine/blob/master/docs/coalmine.png" alt="Coalmine" width="250"/>
 
-## Coalmine: Canary Pest Control ;)
+## Coalmine: Demining canaries in common file formats used for detection
 
 ### Objective
 
 Less detection, more fun.
 
 ### Usage
+
+Fast demining of all supported types. 
+```
+./bin/coalmine all -l ~/Downloads   -c  -v 
+```
+
 ```
 ./bin/coalmine pdf -l ~/Downloads  -p 50  -c  -v 
+./bin/coalmine pdf -l ~/Downloads/file.pdf  -p 50  -c  -v 
 ```
 
 ```
 ./bin/coalmine doc  -l ./data -c  -v 
+./bin/coalmine doc  -l ./data/file.docx -c  -v 
 ```
 
 ```
 ./bin/coalmine xls  -l ./data -c  -v 
+./bin/coalmine xls  -l ./data/file.xslm -c  -v 
 ```
 
 ```
@@ -27,11 +36,11 @@ Usage:
   coalmine [command]
 
 Available Commands:
-  completion  generate the autocompletion script for the specified shell
-  doc         Process doc
-  help        Help about any command
-  pdf         Process pdfs
-  xls         Process xls
+ all         Process all files 
+ excel       Process excel files
+ help        Help about any command
+ pdf         Process pdf
+ word        Process word
 
 Flags:
   -h, --help      help for coalmine
