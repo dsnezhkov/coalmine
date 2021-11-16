@@ -1,5 +1,7 @@
 
-![](docs/coalmine.png)
+![](docs/coalmine.png | 100x100)
+<img src="https://github.com/dsnezhkov/coalmine/blob/master/docs/coalmine.png" alt="Coalmine" width="150"/>
+
 **Coalmine**: Canary Pest Control ;)
 
 ### Objective
