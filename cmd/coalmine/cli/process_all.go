@@ -40,6 +40,7 @@ func init() {
 func processAll(cmd *cobra.Command, args []string) {
 
 
+
 	demineOptions := make (map[string]interface{}, 0)
 	vSeq, err := cmd.Flags().GetBool("sequential")
 	if err != nil {
@@ -82,5 +83,7 @@ func processAll(cmd *cobra.Command, args []string) {
 		format := util.DemineFile(location, verbose, file2mod, file2reg)
 		cod.LocateHoneys(file2mod[format].GetHoneys(), showCandidate)
 	}
+
+	util.PrintStats()
 
 }
