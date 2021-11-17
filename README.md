@@ -147,3 +147,7 @@ data/hhwci3lxddtv9a8bbw1vzp2u5.docm:
 - Cloned sites
 
 As always, if they change we adjust.
+
+## Demo
+
+<img src="https://github.com/dsnezhkov/coalmine/blob/master/docs/coalmine.gif" alt="Coalmine"/>
