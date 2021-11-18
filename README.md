@@ -4,8 +4,7 @@
 ## Coalmine: Demining canaries in common file formats used for detection
 
 ### Objective
-
-Less detection, more fun.
+Less detection, more fun. Don't step on a mine, coalmine! 
 
 ### Usage
 
