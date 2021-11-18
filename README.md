@@ -4,7 +4,7 @@
 ## Coalmine: De-mining canaries in common file formats used for detection
 
 ### Objective
-Windows-based on-prem file checking for canaries prior to opening them in readers (e.g. Acrobat, Word, etc.) or navigating to folders (e.g. folder ini). Detection is based on the idea that we can capture the endpoint communication mechanism for detection beacons - navigation to external URLs, UNCs, etc. This utility is mostly about canarytokens.org setup but can be extended to cover other detctions.
+On-prem file checking for canaries prior to opening them in readers (e.g. Acrobat, Word, etc.) or navigating to folders (e.g. folder ini). Detection is based on the idea that we can capture the endpoint communication mechanism for detection beacons - navigation to external URLs, UNCs, etc. This utility is mostly about canarytokens.org setup but can be extended to cover other detections.
 
 TLDR:
 Less detection, more fun. Don't step on a mine, coalmine! 
