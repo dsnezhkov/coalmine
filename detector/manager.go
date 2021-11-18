@@ -16,12 +16,14 @@ var (
 	// http://canarytokens.com/traffic/zdit3dwvatxe8skh3v9sc03zb/submit.aspx
 	// http://canarytokens.com/feedback/articles/hhwci3lxddtv9a8bbw1vzp2u5/index.html
 	canaryOrgRules = []string{
-		`.*canarytokens.net`, // unmodified reference
+		`.*canarytokens.(net|com|org)`, // unmodified reference
 		`http?:.*\\/\\/[a-z0-9A-Z]{25}.`, // format for subdomain
 		`http?:.*\\/.*\\/[A-Z]{34}`, // format for resource
 		`http?:\/\/.+?\/submit.aspx`, // format for endpoint
 		`http?:\/\/.+?\/traffic\/.+?\/submit.aspx`, // format for URI component
 		`http?:\/\/.+?\/feedback\/.+?\/index.html`,
+		`.+(USERNAME|COMPUTERNAME|USERDOMAIN).+`, // Deskop.ini
+		`.+\.INI\..+`, // Deskop.ini
 	}
 	cod *CanaryOrgDetector
 )

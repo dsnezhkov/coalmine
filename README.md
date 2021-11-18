@@ -22,19 +22,25 @@ E.g.: go in sequence and wait rand(0..10) sec before each file
 
 ```
 Demining by type
+
+Pdf
 ```
 ./bin/coalmine pdf -l ~/Downloads  -p 50  -c  -v 
 ./bin/coalmine pdf -l ~/Downloads/file.pdf  -p 50  -c  -v 
 ```
-
+Word
 ```
 ./bin/coalmine doc  -l ./data -c  -v 
 ./bin/coalmine doc  -l ./data/file.docx -c  -v 
 ```
-
+Excel
 ```
 ./bin/coalmine xls  -l ./data -c  -v 
 ./bin/coalmine xls  -l ./data/file.xslm -c  -v 
+```
+Desktop ini canaries
+```
+./bin/coalmine dini  -l ./data -c  -v 
 ```
 
 ```
@@ -49,6 +55,8 @@ Available Commands:
  help        Help about any command
  pdf         Process pdf
  word        Process word
+ dini        Process Desktop ini files
+
 
 Flags:
   -h, --help      help for coalmine

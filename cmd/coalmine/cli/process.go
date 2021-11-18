@@ -32,6 +32,7 @@ func init() {
 	RootCmd.AddCommand(pdfCmd)
 	RootCmd.AddCommand(xlsCmd)
 	RootCmd.AddCommand(docCmd)
+	RootCmd.AddCommand(diniCmd)
 	RootCmd.AddCommand(allCmd)
 	RootCmd.AddCommand(CompletionCmd)
 

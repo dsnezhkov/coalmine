@@ -9,38 +9,33 @@ import (
 	"coalmine/detector"
 	"coalmine/modules"
 	"coalmine/modules/dini"
-	"coalmine/modules/excel"
-	"coalmine/modules/pdf"
-	"coalmine/modules/word"
 	"coalmine/util"
 	"github.com/spf13/cobra"
 )
 
-var allCmd = &cobra.Command{
-	Use:   "all",
-	Short: "Process all files ",
-	Long:  "Seek out canaries in all objects",
-	Run:   processAll,
+
+
+var diniCmd = &cobra.Command{
+	Use:   "dini",
+	Short: "Process Desktop ini files",
+	Long: "Seek out canaries in Desktop.ini objects",
+	Run: processDINI,
 }
 
-
-
 func init() {
-
-	allCmd.Flags().StringVarP(
+	// DINI section
+	diniCmd.Flags().StringVarP(
 		&location, "location", "l", "",
-		"File or Folder to demine",
+		"File or Folder to fumigate",
 	)
-	allCmd.Flags().BoolVarP(
+	diniCmd.Flags().BoolVarP(
 		&showCandidate, "candidate", "c", true,
 		"Show unverified candidates",
 	)
-	_ = allCmd.MarkFlagRequired("location")
+	_ = diniCmd.MarkFlagRequired("location")
 }
 
-func processAll(cmd *cobra.Command, args []string) {
-
-
+func processDINI (cmd *cobra.Command, args []string) {
 
 	demineOptions := make (map[string]interface{}, 0)
 	vSeq, err := cmd.Flags().GetBool("sequential")
@@ -58,15 +53,9 @@ func processAll(cmd *cobra.Command, args []string) {
 	file2reg = make(map[string]*regexp.Regexp, 0)
 
 	// Compile once
-	file2reg["doc"] = regexp.MustCompile(`(?i)^.*\.(doc|docx|docm)$`)
-	file2reg["xls"] = regexp.MustCompile(`(?i)^.*\.(xls|xlsx|xlsm)$`)
-	file2reg["pdf"] = regexp.MustCompile(`(?i)^.*\.pdf$`)
-	file2reg["dini"] = regexp.MustCompile(`(?i)^.*\.ini$`)
+	file2reg["dini"] = regexp.MustCompile(`(?i)^.*desktop.ini$`)
 
 	file2mod = make(map[string]modules.Processor, 0)
-	file2mod["doc"] = word.CDOCManagerFactory()
-	file2mod["xls"] = excel.CXLSManagerFactory()
-	file2mod["pdf"] = pdf.CPDFManagerFactory()
 	file2mod["dini"] = dini.CDINIManagerFactory()
 
 	fileInfo, err := os.Stat(location)
@@ -77,16 +66,15 @@ func processAll(cmd *cobra.Command, args []string) {
 	cod := detector.CanaryOrgDetectorFactory()
 
 	if fileInfo.IsDir() {
+
 		util.DemineDir(location, verbose, file2mod, file2reg, demineOptions)
 		for k, v := range file2mod {
-			fmt.Printf("\n\t=== Format: %s (verified canaries marked with `->`) === \n", k)
+			fmt.Printf("=== Format: %s (verified canaries marked with `->`) === \n", k)
 			cod.LocateHoneys(v.GetHoneys(), showCandidate)
 		}
 	}else{
 		format := util.DemineFile(location, verbose, file2mod, file2reg)
 		cod.LocateHoneys(file2mod[format].GetHoneys(), showCandidate)
 	}
-
-	util.PrintStats()
 
 }

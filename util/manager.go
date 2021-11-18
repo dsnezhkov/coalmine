@@ -17,7 +17,6 @@ var  rtStatsM sync.RWMutex
 func init() {
 
 	rtStats = make(map[string]int64,0)
-	rtStats["DirSize"] = 0
 	rtStats["TotalFilesProcessed"] = 0
 	rtStats["FilesInScope"] = 0
 	rtStats["TotalTimeSec"] = 0
