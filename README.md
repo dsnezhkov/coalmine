@@ -143,16 +143,14 @@ data/hhwci3lxddtv9a8bbw1vzp2u5.docm:
  go build -o bin/coalmine -ldflags="-s -w"  cmd/coalmine/main.go
 ```
 ### Currently supported formats
-- PDF
-- DOC(X|M)
-- XLS(X|M)
-
-### TODO:
-- Win Folder
-- Redirects
-- SQL
-- Web bugs
-- Cloned sites
+- [x] PDF
+- [x] DOC(X|M)
+- [x] XLS(X|M)
+- [x] Win Folder
+- [ ] Redirects
+- [ ] SQL
+- [ ] Web bugs
+- [ ] Cloned sites
 
 As always, if they change we adjust.
 
