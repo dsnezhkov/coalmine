@@ -11,13 +11,13 @@ Less detection, more fun. Don't step on a mine, coalmine!
 
 ### Usage
 
-Fastest demining (parallel) of all supported types. 
+*Open mode*: Fastest demining (parallel) of all supported types. 
 E.g. As many as core CPU-N paralleism, immediate access
 ```
 ./bin/coalmine all -l ~/Downloads -c  -v 
 ```
 
-Slower demining (sequential) of all supported types.
+*OpSec mode*: Slower demining (sequential) of all supported types.
 E.g.: go in sequence and wait rand(0..10) sec before each file
 ```
 ./bin/coalmine all -l ./data -c -s -v -j 10
