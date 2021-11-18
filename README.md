@@ -1,9 +1,12 @@
 
 <img src="https://github.com/dsnezhkov/coalmine/blob/master/docs/coalmine.png" alt="Coalmine" width="250"/>
 
-## Coalmine: Demining canaries in common file formats used for detection
+## Coalmine: De-mining canaries in common file formats used for detection
 
 ### Objective
+Windows-based on-prem file checking for canaries prior to opening them in readers (e.g. Acrobat, Word, etc.) or navigating to folders (e.g. folder ini). Detection is based on the idea that we can capture the endpoint communication mechanism for detection beacons - navigation to external URLs, UNCs, etc. This utility is mostly about canarytokens.org setup but can be extended to cover other detctions.
+
+TLDR:
 Less detection, more fun. Don't step on a mine, coalmine! 
 
 ### Usage
@@ -140,6 +143,9 @@ data/hhwci3lxddtv9a8bbw1vzp2u5.docm:
 ### Build
 ```
  go build -o bin/coalmine -ldflags="-s -w"  cmd/coalmine/main.go
+ # -or- 
+ GOOS=windows GOARCH=amd64 go build -o ./bin/coalmine.exe -ldflags="-s -w" cmd/coalmine/main.go
+
 ```
 ### Currently supported formats
 - [x] PDF
