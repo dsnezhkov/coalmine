@@ -159,3 +159,16 @@ As always, if they change we adjust.
 ## Demo
 
 <img src="https://github.com/dsnezhkov/coalmine/blob/master/docs/coalmine.gif" alt="Coalmine"/>
+
+## Performance 
+
+```
+=============== Stats ===============
+Folder Size: 47Gi 
+TotalFilesProcessed : 22696
+FilesInScope : 1432
+TotalTimeSec : 531 sec
+
+434.58s user 154.12s system 110% cpu 8:52.70 total
+on 3 GHz Dual-Core Intel Core i7
+```
